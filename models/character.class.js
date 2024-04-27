@@ -26,13 +26,12 @@ class Character extends MovableObject {
     world;
     speed = 5;
     walking_sound = new Audio('../assets/audio/walking.mp3');
-    speedY = 15;
-    accleration = 5;
 
     constructor() {
         super().loadImage('../assets/img/2_character_pepe/2_walk/W-21.png');
         this.loadImages(this.IMAGES_WALKING);
         this.loadImages(this.IMAGES_JUMPING);
+        this.applyGravity();
         this.animate();
     }
 
@@ -41,15 +40,19 @@ class Character extends MovableObject {
         setInterval(() => {
             this.walking_sound.pause();
             if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
-                this.x += this.speed;
+                this.moveRight();
                 this.otherDirection = false;
                 this.walking_sound.play();
             }
 
             if (this.world.keyboard.LEFT && this.x > 0) {
-                this.x -= this.speed;
+                this.moveLeft();
                 this.otherDirection = true;
                 this.walking_sound.play();
+            }
+
+            if (this.world.keyboard.SPACE && !this.isAboveGround()) {
+                this.jump();
             }
 
             this.world.camera_x = -this.x + 100;
@@ -65,10 +68,5 @@ class Character extends MovableObject {
                 }
             }
         }, 50);
-    }
-
-
-    jump() {
-
     }
 }
