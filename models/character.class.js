@@ -11,21 +11,60 @@ class Character extends MovableObject {
         '../assets/img/2_character_pepe/2_walk/W-26.png'
     ];
 
+    IMAGES_JUMPING = [
+        '../assets/img/2_character_pepe/3_jump/J-31.png',
+        '../assets/img/2_character_pepe/3_jump/J-32.png',
+        '../assets/img/2_character_pepe/3_jump/J-33.png',
+        '../assets/img/2_character_pepe/3_jump/J-34.png',
+        '../assets/img/2_character_pepe/3_jump/J-35.png',
+        '../assets/img/2_character_pepe/3_jump/J-36.png',
+        '../assets/img/2_character_pepe/3_jump/J-37.png',
+        '../assets/img/2_character_pepe/3_jump/J-38.png',
+        '../assets/img/2_character_pepe/3_jump/J-39.png'
+    ];
+
+    world;
+    speed = 5;
+    walking_sound = new Audio('../assets/audio/walking.mp3');
+    speedY = 15;
+    accleration = 5;
+
     constructor() {
         super().loadImage('../assets/img/2_character_pepe/2_walk/W-21.png');
         this.loadImages(this.IMAGES_WALKING);
-
+        this.loadImages(this.IMAGES_JUMPING);
         this.animate();
     }
 
 
     animate() {
         setInterval(() => {
-            let i = this.currentImage % this.IMAGES_WALKING.length;
-            let path = this.IMAGES_WALKING[i];
-            this.img = this.imageCache[path];
-            this.currentImage++;
-        }, 100);
+            this.walking_sound.pause();
+            if (this.world.keyboard.RIGHT && this.x < this.world.level.level_end_x) {
+                this.x += this.speed;
+                this.otherDirection = false;
+                this.walking_sound.play();
+            }
+
+            if (this.world.keyboard.LEFT && this.x > 0) {
+                this.x -= this.speed;
+                this.otherDirection = true;
+                this.walking_sound.play();
+            }
+
+            this.world.camera_x = -this.x + 100;
+        }, 500 / 60);
+
+
+        setInterval(() => {
+            if (this.isAboveGround()) {
+                this.playAnimation(this.IMAGES_JUMPING);
+            } else {
+                if (this.world.keyboard.RIGHT || this.world.keyboard.LEFT) {
+                    this.playAnimation(this.IMAGES_WALKING);
+                }
+            }
+        }, 50);
     }
 
 
